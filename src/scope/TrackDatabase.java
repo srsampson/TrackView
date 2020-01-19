@@ -26,8 +26,9 @@ public final class TrackDatabase extends Thread {
         database.setName("TrackDatabase");
 
         try {
-            db = DriverManager.getConnection(config.getDatabaseURL());
-        } catch (SQLException e) {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            db = DriverManager.getConnection(config.getDatabaseURL(), config.getDatabaseLogin(), config.getDatabasePassword());
+        } catch (ClassNotFoundException | SQLException e) {
             System.err.println("TrackDatabase Fatal: Unable to open database " + config.getDatabaseURL());
             System.exit(-1);
         }

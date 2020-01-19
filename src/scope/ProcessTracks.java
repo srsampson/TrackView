@@ -30,11 +30,11 @@ public final class ProcessTracks {
         this.tracks = new ConcurrentHashMap<>();
         this.nav = new OrthographicNavigator();
 
-        task1 = new ProcessTracks.TimeoutThread1();
+        task1 = new TimeoutThread1();
         timer1 = new Timer();
         timer1.scheduleAtFixedRate(task1, 0L, RATE);
 
-        task2 = new ProcessTracks.TimeoutThread2();
+        task2 = new TimeoutThread2();
         timer2 = new Timer();
         timer2.scheduleAtFixedRate(task2, 5L, RATE);
     }

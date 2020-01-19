@@ -124,7 +124,11 @@ public final class Config {
     //
     private Color[] colorMap;
     private String databaseName;
-    
+    private String databaseHost;
+    private String databasePort;
+    private String databaseLogin;
+    private String databasePassword;
+
     Config(String conf, String map) {
         sqlTime = new Timestamp(0L);
         zulu = new ZuluMillis();
@@ -143,7 +147,7 @@ public final class Config {
         screenHeight = 0;
 
         Props = new Properties();
-        
+
         userDir = System.getProperty("user.dir");
         fileSeparator = System.getProperty("file.separator");
         homeDir = userDir + fileSeparator;
@@ -172,13 +176,44 @@ public final class Config {
             System.err.println("Config::getProperties exception Loading Properties " + e1.toString());
         }
 
-        temp = Props.getProperty("db.name");
-
+        temp = Props.getProperty("db.host");
         if (temp == null) {
-            databaseName = "adsb.db";
-            System.out.println("db.name not set, set to adsb.db");
+            databaseHost = "127.0.0.1";
+            System.out.println("db.host not set, set to 127.0.0.1");
+        } else {
+            databaseHost = temp.trim();
+        }
+
+        temp = Props.getProperty("db.name");
+        if (temp == null) {
+            databaseName = "adsb";
+            System.out.println("db.name not set, set to adsb");
         } else {
             databaseName = temp.trim();
+        }
+
+        temp = Props.getProperty("db.port");
+        if (temp == null) {
+            databasePort = "3306";
+            System.out.println("db.port not set, set to 3306");
+        } else {
+            databasePort = temp.trim();
+        }
+
+        temp = Props.getProperty("db.login");
+        if (temp == null) {
+            databaseLogin = "adsb-ro";
+            System.out.println("db.login not set, set to adsb-ro");
+        } else {
+            databaseLogin = temp.trim();
+        }
+
+        temp = Props.getProperty("db.password");
+        if (temp == null) {
+            databasePassword = "secret";
+            System.out.println("db.password not set, set to secret");
+        } else {
+            databasePassword = temp.trim();
         }
 
         temp = Props.getProperty(STATION_ALT, "0").trim();
@@ -379,7 +414,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[0] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP1, colorMap[0]);
-        
+
         temp = Props.getProperty(COLORS_MAP2, "192 192 192");
         Props.setProperty(COLORS_MAP2, temp);
         token = temp.split(" ");
@@ -388,7 +423,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[1] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP2, colorMap[1]);
-        
+
         temp = Props.getProperty(COLORS_MAP3, "192 192 192");
         Props.setProperty(COLORS_MAP3, temp);
         token = temp.split(" ");
@@ -397,7 +432,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[2] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP3, colorMap[2]);
-        
+
         temp = Props.getProperty(COLORS_MAP4, "192 192 192");
         Props.setProperty(COLORS_MAP4, temp);
         token = temp.split(" ");
@@ -406,7 +441,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[3] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP4, colorMap[3]);
-        
+
         temp = Props.getProperty(COLORS_MAP5, "192 192 192");
         Props.setProperty(COLORS_MAP5, temp);
         token = temp.split(" ");
@@ -415,7 +450,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[4] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP5, colorMap[4]);
-        
+
         temp = Props.getProperty(COLORS_MAP6, "192 192 192");
         Props.setProperty(COLORS_MAP6, temp);
         token = temp.split(" ");
@@ -424,7 +459,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[5] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP6, colorMap[5]);
-        
+
         temp = Props.getProperty(COLORS_MAP7, "192 192 192");
         Props.setProperty(COLORS_MAP7, temp);
         token = temp.split(" ");
@@ -433,7 +468,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[6] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP7, colorMap[6]);
-        
+
         temp = Props.getProperty(COLORS_MAP8, "192 192 192");
         Props.setProperty(COLORS_MAP8, temp);
         token = temp.split(" ");
@@ -442,7 +477,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[7] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP8, colorMap[7]);
-        
+
         temp = Props.getProperty(COLORS_MAP9, "192 192 192");
         Props.setProperty(COLORS_MAP9, temp);
         token = temp.split(" ");
@@ -451,7 +486,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[8] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP9, colorMap[8]);
-        
+
         temp = Props.getProperty(COLORS_MAP10, "192 192 192");
         Props.setProperty(COLORS_MAP10, temp);
         token = temp.split(" ");
@@ -460,7 +495,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[9] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP10, colorMap[9]);
-        
+
         temp = Props.getProperty(COLORS_MAP11, "192 192 192");
         Props.setProperty(COLORS_MAP11, temp);
         token = temp.split(" ");
@@ -469,7 +504,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[10] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP11, colorMap[10]);
-        
+
         temp = Props.getProperty(COLORS_MAP12, "192 192 192");
         Props.setProperty(COLORS_MAP12, temp);
         token = temp.split(" ");
@@ -478,7 +513,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[11] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP12, colorMap[11]);
-        
+
         temp = Props.getProperty(COLORS_MAP13, "192 192 192");
         Props.setProperty(COLORS_MAP13, temp);
         token = temp.split(" ");
@@ -487,7 +522,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[12] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP13, colorMap[12]);
-        
+
         temp = Props.getProperty(COLORS_MAP14, "192 192 192");
         Props.setProperty(COLORS_MAP14, temp);
         token = temp.split(" ");
@@ -505,7 +540,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[14] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP15, colorMap[14]);
-        
+
         temp = Props.getProperty(COLORS_MAP16, "192 192 192");
         Props.setProperty(COLORS_MAP16, temp);
         token = temp.split(" ");
@@ -514,7 +549,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[15] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP16, colorMap[15]);
-        
+
         temp = Props.getProperty(COLORS_MAP17, "192 192 192");
         Props.setProperty(COLORS_MAP17, temp);
         token = temp.split(" ");
@@ -522,7 +557,7 @@ public final class Config {
         green = Integer.parseInt(token[1].trim());
         colorMap[16] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP17, colorMap[16]);
-        
+
         temp = Props.getProperty(COLORS_MAP18, "192 192 192");
         Props.setProperty(COLORS_MAP18, temp);
         token = temp.split(" ");
@@ -531,7 +566,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[17] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP18, colorMap[17]);
-        
+
         temp = Props.getProperty(COLORS_MAP19, "192 192 192");
         Props.setProperty(COLORS_MAP19, temp);
         token = temp.split(" ");
@@ -540,7 +575,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[18] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP19, colorMap[18]);
-        
+
         temp = Props.getProperty(COLORS_MAP20, "192 192 192");
         Props.setProperty(COLORS_MAP20, temp);
         token = temp.split(" ");
@@ -549,7 +584,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[19] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP20, colorMap[19]);
-        
+
         temp = Props.getProperty(COLORS_MAP21, "192 192 192");
         Props.setProperty(COLORS_MAP21, temp);
         token = temp.split(" ");
@@ -558,7 +593,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[20] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP21, colorMap[20]);
-        
+
         temp = Props.getProperty(COLORS_MAP22, "192 192 192");
         Props.setProperty(COLORS_MAP22, temp);
         token = temp.split(" ");
@@ -567,7 +602,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[21] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP22, colorMap[21]);
-        
+
         temp = Props.getProperty(COLORS_MAP23, "192 192 192");
         Props.setProperty(COLORS_MAP23, temp);
         token = temp.split(" ");
@@ -576,7 +611,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[22] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP23, colorMap[22]);
-        
+
         temp = Props.getProperty(COLORS_MAP24, "192 192 192");
         Props.setProperty(COLORS_MAP24, temp);
         token = temp.split(" ");
@@ -585,7 +620,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[23] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP24, colorMap[23]);
-        
+
         temp = Props.getProperty(COLORS_MAP25, "192 192 192");
         Props.setProperty(COLORS_MAP25, temp);
         token = temp.split(" ");
@@ -594,7 +629,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[24] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP25, colorMap[24]);
-        
+
         temp = Props.getProperty(COLORS_MAP26, "192 192 192");
         Props.setProperty(COLORS_MAP26, temp);
         token = temp.split(" ");
@@ -603,7 +638,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[25] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP26, colorMap[25]);
-        
+
         temp = Props.getProperty(COLORS_MAP27, "192 192 192");
         Props.setProperty(COLORS_MAP27, temp);
         token = temp.split(" ");
@@ -612,7 +647,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[26] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP27, colorMap[26]);
-        
+
         temp = Props.getProperty(COLORS_MAP28, "192 192 192");
         Props.setProperty(COLORS_MAP28, temp);
         token = temp.split(" ");
@@ -621,7 +656,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[27] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP28, colorMap[27]);
-        
+
         temp = Props.getProperty(COLORS_MAP29, "192 192 192");
         Props.setProperty(COLORS_MAP29, temp);
         token = temp.split(" ");
@@ -630,7 +665,7 @@ public final class Config {
         blue = Integer.parseInt(token[2].trim());
         colorMap[28] = new Color(red, green, blue);
         addColorSetting(COLORS_MAP29, colorMap[28]);
-        
+
         temp = Props.getProperty(COLORS_MAP30, "192 192 192");
         Props.setProperty(COLORS_MAP30, temp);
         token = temp.split(" ");
@@ -714,7 +749,7 @@ public final class Config {
         temp = Props.getProperty(DISP_INSTRM_TRACK, "true").trim();
         addBooleanSetting(DISP_INSTRM_TRACK, Boolean.parseBoolean(temp));
         Props.setProperty(DISP_INSTRM_TRACK, temp);
-        
+
         temp = Props.getProperty(MAP_OBJECTS, "false").trim();
         addBooleanSetting(MAP_OBJECTS, Boolean.parseBoolean(temp));
         Props.setProperty(MAP_OBJECTS, temp);
@@ -726,12 +761,11 @@ public final class Config {
         temp = Props.getProperty(MAP_NAMES, "false").trim();
         addBooleanSetting(MAP_NAMES, Boolean.parseBoolean(temp));
         Props.setProperty(MAP_NAMES, temp);
-        
+
         /*
          * User doesn't have a valid config file
          * Create one
          */
-
         if (noProps) {
             saveProperties(filename);
         }
@@ -755,7 +789,11 @@ public final class Config {
             sqlTime.setTime(zulu.getUTCTime());
             bout.write(sqlTime.toString() + "\r\n#\r\n");
 
+            bout.write("db.host = " + databaseHost + "\r\n");
+            bout.write("db.port = " + databasePort + "\r\n");
             bout.write("db.name = " + databaseName + "\r\n");
+            bout.write("db.login = " + databaseLogin + "\r\n");
+            bout.write("db.password = " + databasePassword + "\r\n");
             bout.write("station.name = " + homeName + "\r\n");
             bout.write("station.alt = " + Integer.toString(homeAlt) + "\r\n");
             bout.write("station.latitude = " + Double.toString(homeLat) + "\r\n");
@@ -828,12 +866,30 @@ public final class Config {
     }
 
     /**
+     * Getter to return the database login name
+     *
+     * @return a string Representing the database login name
+     */
+    public String getDatabaseLogin() {
+        return databaseLogin;
+    }
+
+    /**
+     * Getter to return the database login password
+     *
+     * @return a string Representing the database login password
+     */
+    public String getDatabasePassword() {
+        return databasePassword;
+    }
+
+    /**
      * Getter to return the database connection URL
      *
      * @return a string Representing the database URL
      */
     public String getDatabaseURL() {
-        return "jdbc:sqlite:" + databaseName;
+        return "jdbc:mysql://" + databaseHost + ":" + databasePort + "/" + databaseName;
     }
 
     /**
@@ -1081,7 +1137,9 @@ public final class Config {
         }
     }
 
-    /** mutable class */
+    /**
+     * mutable class
+     */
     class IntegerSetting {
 
         int value;
