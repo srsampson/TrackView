@@ -29,7 +29,7 @@ Right mouse click centers on that point. Mouse wheel controls zoom in and out.
 
 The Conflict Alert is probably not very useful below 6000 feet, as aircraft take-off and land, and are close too each other.
 
-![My image](https://raw.githubusercontent.com/srsampson/TrackViewer/master/conflict.png)
+![My image](https://raw.githubusercontent.com/srsampson/TrackView/master/conflict.png)
 
 ##### Display Options
 It might not be obvious, but some of the buttons act like toggle switches. If you left mouse click the bottom half of the button, the number decreases, and the top half causes an increase. The Map pulls up three options (OBJ, NAM, VEC) but only the VEC (vectors) has been mechanized so far. The other two are going to be Special Points and Navigation Objects, and an option to turn their Name on.
