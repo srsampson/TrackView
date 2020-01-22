@@ -2,9 +2,7 @@ package scope;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import math.OrthographicNavigator;
 
@@ -27,7 +25,7 @@ public final class Track {
      * Contains a list of the most recent echoes of this track. The list must be
      * sorted, so that the most recent echo is the first element of the vector.
      */
-    private List<Echo> echoHistory;
+    //private List<Echo> echoHistory;
     private List<String> sites;
 
     /*
@@ -46,7 +44,7 @@ public final class Track {
     private int verticalRate;
     private int verticalTrend;
     private int[] trend = new int[10];
-    private static int trend_el = 0;
+    private int trend_el = 0;
     //
     private String callsign;
     private String acid;
@@ -84,8 +82,8 @@ public final class Track {
      * A track is the complete data structure of the Aircraft ID (acid). It
      * takes several different target reports to gather all the data, but this
      * is where it is finally stored.
-     * @param acid
-     * @param d
+     * @param acid Aircraft ID
+     * @param d Config params
      */
     public Track(String acid, Config d) {
         this.dc = d;
@@ -95,7 +93,7 @@ public final class Track {
         this.mode = MODE_NORMAL;
         this.squawk = "0000";
         this.latitude = 0.0;
-        this.longitude = 0.0;;
+        this.longitude = 0.0;
         this.altitude = -9999;
         this.verticalRate = 0;
         this.verticalTrend = 0;
@@ -105,7 +103,7 @@ public final class Track {
         this.groundSpeed = 0.0;
         this.groundTrack = 0.0;
         this.updatedPosTime = 0L;
-        this.verticalTrend_time = 0L;
+        //this.verticalTrend_time = 0L;
         this.updatedTime = 0L;
 
         /*
@@ -114,7 +112,7 @@ public final class Track {
         this.useComputed = true;
         this.computedGroundSpeed = 0.0;        // Some planes don't send speed
         this.computedGroundTrack = 0.0;        // Some planes don't send heading
-        this.echoHistory = new ArrayList<>();
+        //this.echoHistory = new ArrayList<>();
         this.sites = new ArrayList<>();
         this.conflicts = new ConcurrentHashMap<>();
         this.trackOptions = new ConcurrentHashMap<>();
@@ -331,47 +329,15 @@ public final class Track {
     }
 
     public synchronized void setVerticalTrendZero() {
-        trend[trend_el] = 0;
-        trend_el = (trend_el + 1) % 10;
-
-        verticalRate = verticalTrend = 0;
+        verticalTrend = 0;
         verticalTrend_time = zulu.getUTCTime();
     }
 
-    /*
-     * Start a trend if the rate is greater than 192 fpm
-     *
-     * Adding all the up's and downs from the trend vector
-     * should give us a trend
-     */
-    public synchronized void setVerticalRate(int val) {
-        this.verticalRate = val;
+    public synchronized void setVerticalRateAndTrend(int val1, int val2) {
+        this.verticalRate = val1;
 
-        int vt = 0;
-
-        if (val > 192) {
-            trend[trend_el] = 1;
-        } else if (val < -192) {
-            trend[trend_el] = -1;
-        } else {
-            trend[trend_el] = 0;
-        }
-
-        trend_el = (trend_el + 1) % 10;
-
-        for (int i = 0; i < 10; i++) {
-            vt += trend[i];
-        }
-
-        if (vt > 0) {
-            verticalTrend = 1;
-        } else if (vt < 0) {
-            verticalTrend = -1;
-        } else {
-            verticalTrend = 0;
-        }
-
-        this.verticalTrend_time = zulu.getUTCTime();
+        verticalTrend = val2;
+        verticalTrend_time = zulu.getUTCTime();
     }
 
     public synchronized long getVerticalTrendUpdateTime() {
@@ -489,7 +455,6 @@ public final class Track {
                 this.longitude = lon;
                 this.updatedPosTime = time;
                 this.setTrackBooleanOption(TRACKBLOCK_DIM, Boolean.FALSE);
-                insertEcho();
             }
         }
     }
@@ -520,116 +485,6 @@ public final class Track {
 
     public void setRange(double range) {
         this.range = range;
-    }
-
-    /**
-     * Method to determine if there are any echos on the queue
-     *
-     * @return a boolean Representing whether there are echos on the queue
-     */
-    public synchronized boolean hasEchoes() {
-        return echoHistory.size() > 0;
-    }
-
-    /**
-     * Method to return the number of echoes on the queue
-     *
-     * @return an integer representing the number of echoes on the queue
-     */
-    public synchronized int getNumberOfEchoes() {
-        return echoHistory.size();
-    }
-
-    /**
-     * Method to return the echo at index 0 or null if none
-     *
-     * @return an Echo position on the queue at index 0 or null if none
-     */
-    public synchronized Echo getLastEcho() {
-        Echo echo = (Echo) null;
-
-        if (echoHistory.isEmpty()) {
-            return echo;    // will be null
-        }
-
-        try {
-            echo = echoHistory.get(0);
-            return echo;
-        } catch (NoSuchElementException e) {
-            System.err.println("Track::getLastEcho Exception during firstElement " + e.toString());
-        }
-
-        return echo;    // will be assigned or null on exception
-    }
-
-    /**
-     * Returns an array containing echo positions
-     *
-     * @return An array containing echo positions
-     */
-    public synchronized Object[] getEchoes() {
-        return echoHistory.toArray();
-    }
-
-    /**
-     * Adds a new echo for this track at the head of the Vector
-     */
-    public synchronized void insertEcho() {
-        /*
-         * Check if track has any old echoes
-         */
-
-        if (hasEchoes()) {
-            /*
-             * Has old echoes, so only add a new echo if it is greater than the
-             * interval
-             */
-            long time = getUpdatedPosTime();
-
-            // Safety check
-            if (getLastEcho() != (Echo) null) {
-                // OK, get to work
-
-                if ((time - getLastEcho().getEchoTime()) >= ECHO_INTERVAL) {
-                    try {
-                        echoHistory.add(new Echo(this));
-                    } catch (Exception e) {
-                        System.err.println("Track::insertEcho1 Exception during insertElementAt " + e.toString());
-                    }
-                }
-            }
-        } else {
-            /*
-             * No old echoes, so store this one
-             */
-
-            try {
-                echoHistory.add(new Echo(this));
-            } catch (Exception e) {
-                System.err.println("Track::insertEcho2 Exception during insertElementAt " + e.toString());
-            }
-        }
-    }
-    public synchronized void removeOldEchoes(long time) {
-        Echo e;
-        long t;
-        
-        for (Iterator i = echoHistory.iterator(); i.hasNext(); ) {
-            try {
-                e = (Echo) i.next();
-                t = ((dc.getIntegerSetting(Config.DISP_INSTRM_ECHOES) * 60L) + 10L) * 1000L;
-                
-                if (e.getEchoTime() < (time - t)) {
-                    try {
-                        i.remove();
-                    } catch (Exception e2) {
-                        System.err.println("Track::removeOldEchoes Exception during remove " + e2.toString());
-                    }
-                }
-            } catch (Exception e1) {
-                System.err.println("Track::removeOldEchoes Exception during elementAt " + e1.toString());
-            }
-        }
     }
 
     public synchronized String[] getConflicts() {

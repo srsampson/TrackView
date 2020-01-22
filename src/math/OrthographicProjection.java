@@ -19,6 +19,19 @@ import scope.LatLon;
  */
 public class OrthographicProjection extends Projection {
 
+    private class Point3D {
+
+        private double x;
+        private double y;
+        private double z;
+
+        public Point3D(double val1, double val2, double val3) {
+            x = val1;
+            y = val2;
+            z = val3;
+        }
+    }
+
     private Point3D centerVector;
     private Point3D centerTangent;
 
@@ -45,38 +58,38 @@ public class OrthographicProjection extends Projection {
             //throw new IllegalArgumentException("Illegal latitude: " + center.y);
         }
 
-        this.centerVector = computeVector(center.lat, center.lon);
-        this.centerTangent = computeTangent(center.lon);
+        centerVector = computeVector(center.lat, center.lon);
+        centerTangent = computeTangent(center.lon);
     }
 
     /**
      * Re-centers the projection at the given location.
      *
-     * @param center The center of the projection given in degrees of
+     * @param centerval The center of the projection given in degrees of
      * longitude/latitude. Positive values are east/north.
      */
     @Override
-    public void setCenter(LatLon center) {
-        if (center.lon != center.lon // check for "NaN"
-                || center.lon > 180.0 || center.lon < -180.0) {
+    public void setCenter(LatLon centerval) {
+        if (centerval.lon != centerval.lon // check for "NaN"
+                || centerval.lon > 180.0 || centerval.lon < -180.0) {
             return;
             //throw new IllegalArgumentException("Illegal longitude: " + center.x);
         }
 
-        if (center.lat != center.lat // check for "NaN"
-                || center.lat > 90.0 || center.lat < -90.0) {
+        if (centerval.lat != centerval.lat // check for "NaN"
+                || centerval.lat > 90.0 || centerval.lat < -90.0) {
             return;
             //throw new IllegalArgumentException("Illegal latitude: " + center.y);
         }
 
-        this.center = center;
-        this.centerVector = computeVector(center.lat, center.lon);
-        this.centerTangent = computeTangent(center.lon);
+        center = centerval;
+        centerVector = computeVector(centerval.lat, centerval.lon);
+        centerTangent = computeTangent(centerval.lon);
     }
     
     @Override
-    public LatLon convertToMeters(LatLon p) {
-        return convertToMeters(p.lat, p.lon);
+    public LatLon convertToMeters(LatLon point) {
+        return convertToMeters(point.lat, point.lon);
     }
     
     /**
@@ -102,7 +115,7 @@ public class OrthographicProjection extends Projection {
             return new LatLon();
         }
 
-        // compute vector from center to given point
+        // subtract vector from center to given point
         Point3D p = computeVector(lat, lon);
         p.x -= centerVector.x;
         p.y -= centerVector.y;
@@ -241,19 +254,6 @@ public class OrthographicProjection extends Projection {
         double cosLon = Math.cos(Math.toRadians(l));
 
         return new Point3D(sinLon, 0.0, cosLon);
-    }
-
-    private class Point3D {
-
-        private double x;
-        private double y;
-        private double z;
-
-        public Point3D(double x, double y, double z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
     }
 }
 

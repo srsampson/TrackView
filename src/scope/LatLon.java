@@ -8,7 +8,7 @@ public final class LatLon implements Serializable {
     public double lon;
 
     /**
-     * Create a LatLon Object
+     * Create a default LatLon Object
      *
      * Initialized to zero
      */

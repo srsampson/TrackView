@@ -25,8 +25,7 @@ public interface Navigator {
      * @return a Point2D The location which lies the given number of miles in the
      * given direction from the given starting location.
      */
-    public LatLon getFutureLocation(LatLon start,
-            double heading, double miles);
+    public LatLon getFutureLocation(LatLon start, double heading, double miles);
 
     /**
      * Calculates the future location, an aircraft reaches that travels at 

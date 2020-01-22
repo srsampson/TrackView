@@ -68,7 +68,7 @@ public final class Main {
 
         Runtime.getRuntime().addShutdownHook(new Shutdown(procTrack, db));
 
-        f = new ScopeFrame(config, procTrack);                   // Create a new display Panel
+        f = new ScopeFrame(config, db, procTrack);        // Create a new display Panel
         f.setTitle(config.getHomeName());
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setSize(config.getScreenWidth(), config.getScreenHeight());

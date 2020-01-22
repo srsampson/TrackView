@@ -37,7 +37,7 @@ public abstract class Projection {
      * latitude/Longitude. Positive values are east/north.
      */
     public Projection(LatLon c) {
-        this.center = c;
+        center = c;
     }
 
     /**

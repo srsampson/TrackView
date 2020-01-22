@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.sql.Connection;
 import java.util.Collection;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -35,14 +36,17 @@ public final class ScopePanel extends JPanel
     private final Renderer renderer;
     private final ProcessTracks process;
     private final Config dc;
+    private final Connection db;
+    
     //
     //private static int middleX = 0;
     //private static int middleY = 0;
 
-    public ScopePanel(ProcessTracks p, LatLon gcenter, Config c) {
+    public ScopePanel(ProcessTracks p, Connection con, LatLon gcenter, Config c) {
         this.process = p;
         this.center = gcenter;
         this.dc = c;
+        this.db = con;
         this.scale = c.getMapScale();
         this.minScale = 0.00004;
         this.maxScale = 1000.0;
@@ -53,7 +57,7 @@ public final class ScopePanel extends JPanel
         projection = navigator.getProjection();
         
         new Conflict(process, dc);
-        renderer = new Renderer(process, projection, navigator, scale, dc);
+        renderer = new Renderer(process, db, projection, navigator, scale, dc);
 
         // required for regularly changing or blinking symbols
         Timer timer = new Timer(500, this);

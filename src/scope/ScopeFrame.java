@@ -4,6 +4,7 @@ import gui.MapGeoData;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.sql.Connection;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
@@ -22,9 +23,11 @@ public final class ScopeFrame extends JFrame implements KeyListener {
     private final Config props;
     private final JLayeredPane jLayeredPane1;
     private final JFrame parent;
+    private Connection db;
 
-    public ScopeFrame(Config c, ProcessTracks pt) {
+    public ScopeFrame(Config c, TrackDatabase tb, ProcessTracks pt) {
         this.procTrack = pt;
+        this.db = tb.getDatabaseConnection();
         initComponents();
 
         parent = this;
@@ -43,7 +46,7 @@ public final class ScopeFrame extends JFrame implements KeyListener {
     }
 
     private void initScopePanel(LatLon center) {
-        this.scopePanel = new ScopePanel(procTrack, center, this.props);
+        this.scopePanel = new ScopePanel(procTrack, db, center, this.props);
         jLayeredPane1.add(this.scopePanel, new Integer(LAYER_SCOPE_PANEL));
     }
 

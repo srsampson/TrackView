@@ -193,9 +193,6 @@ public final class ProcessTracks {
                 try {
                     acid = track.getAcid();
 
-                    // get rid of the old echoes
-                    track.removeOldEchoes(currentTime);
-
                     // find the targets that haven't been position updated in x seconds
                     trackTime = track.getUpdatedPosTime();
 

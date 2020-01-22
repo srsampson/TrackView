@@ -7,6 +7,10 @@ import gui.MapVector;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,15 +32,22 @@ public final class Renderer extends ScopeRenderer {
     private final NumberFormat nf4;
     //
     private int windowX, windowY;
+    private long echoLimit;
+    //
     private MapGeoData mapGeoData;
     private MapVector mapVector;
     private MapObject mapObject;
     private Graphics2D graph;
+    //
+    private final Connection db;
+    private final ZuluMillis zulu;
 
-    public Renderer(ProcessTracks pr, Projection p, Navigator n, double s, Config c) {
+    public Renderer(ProcessTracks pr, Connection con, Projection p, Navigator n, double s, Config c) {
         super(p, n, s, c);
 
+        this.zulu = new ZuluMillis();
         this.process = pr;
+        this.db = con;
         this.sprites = new ConcurrentHashMap<>();
 
         nf3 = NumberFormat.getIntegerInstance();
@@ -62,11 +73,13 @@ public final class Renderer extends ScopeRenderer {
 
     @Override
     public void renderer(Graphics graphics, int width, int height, boolean displayStep) {
+        Statement query = null;
+        ResultSet rs = null;
+        String queryString;
         LatLon p, m;
         int x, y, alt, top, bottom, vert;
         boolean dim = false;
         boolean paint_echo;
-        Object[] echoes;
 
         if (graphics == null) {
             return;
@@ -77,6 +90,8 @@ public final class Renderer extends ScopeRenderer {
 
         graph = (Graphics2D) graphics.create();
         graph.setFont(dc.getFontSetting(Config.DISP_INSTRM_FONT));
+        
+        echoLimit = ((dc.getIntegerSetting(Config.DISP_INSTRM_ECHOES) * 60L) + 10L) * 1000L;
 
         // mapGeoData is null until map data is finally read from file
         if (mapGeoData != null) {
@@ -90,9 +105,11 @@ public final class Renderer extends ScopeRenderer {
         tracks = process.getTrackListWithPositions();
 
         /*
-         * Second, plot the targets onto the projection
+         * Second, plot the targets and echoes onto the projection
          */
         if (!tracks.isEmpty()) {
+            long currentTime = zulu.getUTCTime();
+
             for (Track track : tracks) {
                 alt = track.getAltitude();
 
@@ -136,35 +153,64 @@ public final class Renderer extends ScopeRenderer {
                 }
 
                 /*
-                 * Get this tracks echoes
+                 * Get this tracks echoes from the database
                  */
-                if (paint_echo && track.hasEchoes()) {
-                    echoes = track.getEchoes();
+                if (paint_echo) {
+                    try {
+                        queryString = String.format("SELECT latitude,longitude,verticalTrend"
+                                + " FROM targetecho WHERE acid='%s' && (utcdetect > %d) ORDER BY "
+                                + "utcdetect DESC",
+                                track.getAcid(),
+                                (currentTime - echoLimit));
 
-                    /*
-                     * and paint them
-                     */
-                    for (Object echoe : echoes) {
-                        p = ((Echo) echoe).getEchoPosition();
-                        vert = ((Echo) echoe).getEchoVertical();
-                        if (p.lon != 0.0 && p.lat != 0.0) {
-                            try {
-                                m = projection.convertToMeters(p);
-                                x = (int) (m.lon * scale);
-                                y = (int) (m.lat * (-scale));
+                        try {
+                            query = db.createStatement();
+                            rs = query.executeQuery(queryString);
+                        } catch (SQLException esql) {
+                            query.close();
+                            continue;
+                        }
 
-                                if (isInRange(x, y)) {
-                                    if (vert < 0) {
-                                        graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_DESCEND_HIST));
-                                    } else if (vert > 0) {
-                                        graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_CLIMB_HIST));
-                                    } else {
-                                        graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_HIST));
+                        /*
+                         * and paint them
+                         */
+                        while (rs.next()) {
+                            p = new LatLon(rs.getFloat("latitude"), rs.getFloat("longitude"));
+                            vert = rs.getInt("verticalTrend");
+
+                            if (p.lon != 0.0 && p.lat != 0.0) {
+                                try {
+                                    m = projection.convertToMeters(p);
+                                    x = (int) (m.lon * scale);
+                                    y = (int) (m.lat * (-scale));
+
+                                    if (isInRange(x, y)) {
+                                        if (vert < 0) {
+                                            graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_DESCEND_HIST));
+                                        } else if (vert > 0) {
+                                            graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_CLIMB_HIST));
+                                        } else {
+                                            graph.setColor(dc.getColorSetting(Config.COLORS_TRACK_HIST));
+                                        }
+
+                                        graph.fillOval(x, y, dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE), dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE) + 1);
                                     }
-
-                                    graph.fillOval(x, y, dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE), dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE) + 1);
+                                } catch (Exception e) {
                                 }
-                            } catch (Exception e) {
+                            }
+                        }
+                    } catch (SQLException e9) {
+                    } finally {
+                        if (rs != null) {
+                            try {
+                                rs.close();
+                            } catch (SQLException e) {
+                            }
+                        }
+                        if (query != null) {
+                            try {
+                                query.close();
+                            } catch (SQLException e) {
                             }
                         }
                     }
@@ -426,7 +472,7 @@ public final class Renderer extends ScopeRenderer {
                     }
                 }
             }
-            
+
             if (vr != 0) {
                 if (vr > 0) {
                     thirdLine += "+";

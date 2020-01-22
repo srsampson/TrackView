@@ -47,6 +47,10 @@ public final class TrackDatabase extends Thread {
         }
     }
 
+    public Connection getDatabaseConnection() {
+        return db;
+    }
+
     @Override
     public void run() {
         Statement query = null;
@@ -58,7 +62,7 @@ public final class TrackDatabase extends Thread {
         int val;
 
         while (EOF == false) {
-            queryString = "SELECT * FROM target WHERE (acid,quality) IN ( SELECT acid, MAX(quality) FROM target GROUP BY acid) order by utcupdate";
+            queryString = "SELECT * FROM target WHERE (acid,quality) IN ( SELECT acid, MAX(quality) FROM target GROUP BY acid) ORDER BY utcupdate";
 
             try {
                 query = db.createStatement();
@@ -85,7 +89,7 @@ public final class TrackDatabase extends Thread {
                         track.setComputedGroundTrack(rs.getFloat("gtComputed"));
                         track.setCallsign(rs.getString("callsign"));
                         track.setPosition(rs.getFloat("latitude"), rs.getFloat("longitude"), utcupdate);
-                        track.setVerticalRate(rs.getInt("verticalRate"));
+                        track.setVerticalRateAndTrend(rs.getInt("verticalRate"), rs.getInt("verticalTrend"));
 
                         val = rs.getInt("squawk");  // returns 0 on SQL null
 
@@ -174,7 +178,7 @@ public final class TrackDatabase extends Thread {
              */
 
             try {
-                Thread.sleep(500L);    // @ .5 second nap, no need to hammer database
+                Thread.sleep(1000L);    // @ 1 second nap, no need to hammer database
             } catch (InterruptedException e3) {
             }
         }

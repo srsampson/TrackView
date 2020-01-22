@@ -7,6 +7,7 @@ import scope.LatLon;
 public class OrthographicNavigator implements Navigator {
 
     private static final float METERS_PER_NM = 1852.0F;
+    //
     private OrthographicProjection projection;
 
     public OrthographicNavigator(LatLon center) {
@@ -18,7 +19,7 @@ public class OrthographicNavigator implements Navigator {
     }
 
     public OrthographicProjection getProjection() {
-        return this.projection;
+        return projection;
     }
 
     @Override
