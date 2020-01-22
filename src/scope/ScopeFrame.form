@@ -80,7 +80,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Tahoma" size="12" style="2"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Version 1.90, January 2020"/>
+            <Property name="text" type="java.lang.String" value="Version 1.91, January 2020"/>
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>

@@ -121,7 +121,7 @@ public final class ScopeFrame extends JFrame implements KeyListener {
         jLabel1.setText("TrackView");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 2, 12)); // NOI18N
-        jLabel2.setText("Version 1.90, January 2020");
+        jLabel2.setText("Version 1.91, January 2020");
         jLabel2.setToolTipText("");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N

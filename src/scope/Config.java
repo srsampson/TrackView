@@ -240,7 +240,7 @@ public final class Config {
             homeLon = 0.0D;
         }
 
-        temp = Props.getProperty(STATION_NAME, "TrackViewer-1.90").trim();
+        temp = Props.getProperty(STATION_NAME, "TrackViewer-1.91").trim();
         Props.setProperty(STATION_NAME, temp);
         homeName = temp;
 
