@@ -1,6 +1,8 @@
 #### TrackView A Java ADS-B Track Display Program using MySQL
 This is a simple viewer that allows you to see the tracks visually on a 2D display. When started, the program reads a configuration file, and a map file in the directory it is run from. It then connects to the database, and decodes and displays the data. The database is populated with the ```ADSBMySQL``` application.
 
+![My image](https://raw.githubusercontent.com/srsampson/TrackView/master/screenshot.png)
+
 The ```map.dat``` file is Basestation compatible. So you can use Jordan's Outline Maker Web Page to create maps:
 
 ```http://acme.com/jef/outlines/```
