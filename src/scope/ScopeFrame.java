@@ -23,36 +23,36 @@ public final class ScopeFrame extends JFrame implements KeyListener {
     private final Config props;
     private final JLayeredPane jLayeredPane1;
     private final JFrame parent;
-    private Connection db;
+    private final Connection db;
 
     public ScopeFrame(Config c, TrackDatabase tb, ProcessTracks pt) {
-        this.procTrack = pt;
-        this.db = tb.getDatabaseConnection();
+        procTrack = pt;
+        db = tb.getDatabaseConnection();
         initComponents();
 
         parent = this;
 
         // we don't want any keyboard focus management
-        this.setFocusTraversalKeysEnabled(false);
+        setFocusTraversalKeysEnabled(false);
 
-        this.props = c;
+        props = c;
 
         jLayeredPane1 = new JLayeredPane();
         jLayeredPane1.setLayout(new ScopeLayoutManager(this));
-        this.setContentPane(jLayeredPane1);
+        setContentPane(jLayeredPane1);
 
         initDisplayConfigPanel();
         initScopePanel(new LatLon(props.getHomeLat(), props.getHomeLon()));     // plot center
     }
 
     private void initScopePanel(LatLon center) {
-        this.scopePanel = new ScopePanel(procTrack, db, center, this.props);
-        jLayeredPane1.add(this.scopePanel, new Integer(LAYER_SCOPE_PANEL));
+        scopePanel = new ScopePanel(procTrack, db, center, props);
+        jLayeredPane1.add(scopePanel, new Integer(LAYER_SCOPE_PANEL));
     }
 
     private void initDisplayConfigPanel() {
-        this.displayConfigPanel = new DisplayConfigPanel(this.props);
-        jLayeredPane1.add(this.displayConfigPanel, new Integer(LAYER_CONFIG_PANEL));
+        displayConfigPanel = new DisplayConfigPanel(props);
+        jLayeredPane1.add(displayConfigPanel, new Integer(LAYER_CONFIG_PANEL));
     }
 
     /**
@@ -61,15 +61,15 @@ public final class ScopeFrame extends JFrame implements KeyListener {
      */
     private void reinitDisplayConfigPanel() {
         jLayeredPane1.remove(displayConfigPanel);
-        this.displayConfigPanel = new DisplayConfigPanel(this.props);
-        jLayeredPane1.add(this.displayConfigPanel, new Integer(LAYER_CONFIG_PANEL));
+        displayConfigPanel = new DisplayConfigPanel(props);
+        jLayeredPane1.add(displayConfigPanel, new Integer(LAYER_CONFIG_PANEL));
         jLayeredPane1.validate();
 
         /*
          * Keep display on or off, depending on its current state
          */
 
-        this.displayConfigPanel.setVisible(ConfigCheckBox.isSelected());
+        displayConfigPanel.setVisible(ConfigCheckBox.isSelected());
     }
 
     public void setMapData(MapGeoData md) {
@@ -77,11 +77,11 @@ public final class ScopeFrame extends JFrame implements KeyListener {
     }
 
     public ScopePanel getScopePanel() {
-        return this.scopePanel;
+        return scopePanel;
     }
 
     public DisplayConfigPanel getDisplayConfigPanel() {
-        return this.displayConfigPanel;
+        return displayConfigPanel;
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

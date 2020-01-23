@@ -51,7 +51,7 @@ public final class Main {
             }
         } catch (Exception e) {
         }
-        
+
         Locale.setDefault(Locale.US);
 
         try {

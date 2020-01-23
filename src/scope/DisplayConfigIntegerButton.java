@@ -26,21 +26,21 @@ public final class DisplayConfigIntegerButton extends JPanel implements ActionLi
             super();
 
             Dimension d = new Dimension(48, 15);
-            this.setPreferredSize(d);
-            this.setMinimumSize(d);
-            this.setSize(d);
+            setPreferredSize(d);
+            setMinimumSize(d);
+            setSize(d);
 
-            this.setOpaque(false);
-            this.setFocusable(false);
+            setOpaque(false);
+            setFocusable(false);
 
-            this.setBorder(BorderFactory.createEmptyBorder());
-            this.setForeground(Config.NORMAL_WHITE);
-            this.setBackground(Config.LOW_WHITE);
+            setBorder(BorderFactory.createEmptyBorder());
+            setForeground(Config.NORMAL_WHITE);
+            setBackground(Config.LOW_WHITE);
 
             if (up) {
-                this.setActionCommand("up");
+                setActionCommand("up");
             } else {
-                this.setActionCommand("down");
+                setActionCommand("down");
             }
         }
 
@@ -50,41 +50,41 @@ public final class DisplayConfigIntegerButton extends JPanel implements ActionLi
         }
     }
 
-    public DisplayConfigIntegerButton(String key, String text, Config c) {
+    public DisplayConfigIntegerButton(String k, String t, Config c) {
         super();
 
-        this.key = key;
-        this.text = text;
-        this.dc = c;
-        this.setValue(dc.getIntegerSetting(key));
+        key = k;
+        text = t;
+        dc = c;
+        setValue(dc.getIntegerSetting(key));
 
         Dimension d = new Dimension(50, 35);
-        this.setPreferredSize(d);
-        this.setMinimumSize(d);
-        this.setSize(d);
+        setPreferredSize(d);
+        setMinimumSize(d);
+        setSize(d);
 
-        this.setLayout(null);
-        this.setOpaque(false);
-        this.setFocusable(false);
+        setLayout(null);
+        setOpaque(false);
+        setFocusable(false);
 
-        this.setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
-        this.setForeground(Config.NORMAL_WHITE);
-        this.setBackground(Config.LOW_WHITE);
+        setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
+        setForeground(Config.NORMAL_WHITE);
+        setBackground(Config.LOW_WHITE);
 
         upButton = new InvisibleButton(true);
-        this.add(upButton);
+        add(upButton);
         upButton.setBounds(1, 1, upButton.getWidth(), upButton.getHeight());
         upButton.addActionListener(this);
 
         downButton = new InvisibleButton(false);
-        this.add(downButton);
+        add(downButton);
         downButton.setBounds(1, 20, downButton.getWidth(), downButton.getHeight());
         downButton.addActionListener(this);
     }
 
     public void setValue(int val) {
-        this.value = val;
-        this.repaint();
+        value = val;
+        repaint();
     }
 
     @Override
@@ -99,11 +99,11 @@ public final class DisplayConfigIntegerButton extends JPanel implements ActionLi
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == upButton && e.getActionCommand().equals(CMD_UP)) {
-            this.setValue(dc.incIntegerSetting(key));
+            setValue(dc.incIntegerSetting(key));
         }
 
         if (e.getSource() == downButton && e.getActionCommand().equals(CMD_DOWN)) {
-            this.setValue(dc.decIntegerSetting(key));
+            setValue(dc.decIntegerSetting(key));
         }
     }
 }

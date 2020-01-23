@@ -45,10 +45,10 @@ public final class Renderer extends ScopeRenderer {
     public Renderer(ProcessTracks pr, Connection con, Projection p, Navigator n, double s, Config c) {
         super(p, n, s, c);
 
-        this.zulu = new ZuluMillis();
-        this.process = pr;
-        this.db = con;
-        this.sprites = new ConcurrentHashMap<>();
+        zulu = new ZuluMillis();
+        process = pr;
+        db = con;
+        sprites = new ConcurrentHashMap<>();
 
         nf3 = NumberFormat.getIntegerInstance();
         nf3.setMinimumIntegerDigits(3);
@@ -663,7 +663,7 @@ public final class Renderer extends ScopeRenderer {
     }
 
     public void setMapData(MapGeoData m) {
-        this.mapGeoData = m;
+        mapGeoData = m;
     }
 
     private void paintMapObjects(Graphics2D graph) {

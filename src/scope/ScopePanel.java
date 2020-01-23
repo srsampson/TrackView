@@ -43,15 +43,15 @@ public final class ScopePanel extends JPanel
     //private static int middleY = 0;
 
     public ScopePanel(ProcessTracks p, Connection con, LatLon gcenter, Config c) {
-        this.process = p;
-        this.center = gcenter;
-        this.dc = c;
-        this.db = con;
-        this.scale = c.getMapScale();
-        this.minScale = 0.00004;
-        this.maxScale = 1000.0;
-        this.displayStep = false;
-        this.setBackground(dc.getColorSetting(Config.COLORS_BACK_GND));
+        process = p;
+        center = gcenter;
+        dc = c;
+        db = con;
+        scale = c.getMapScale();
+        minScale = 0.00004;
+        maxScale = 1000.0;
+        displayStep = false;
+        setBackground(dc.getColorSetting(Config.COLORS_BACK_GND));
 
         navigator = new OrthographicNavigator(center);
         projection = navigator.getProjection();
@@ -98,16 +98,16 @@ public final class ScopePanel extends JPanel
         return minScale;
     }
 
-    public void setMinScale(double minScale) {
-        this.minScale = minScale;
+    public void setMinScale(double val) {
+        minScale = val;
     }
 
     public double getMaxScale() {
         return maxScale;
     }
 
-    public void setMaxScale(double maxScale) {
-        this.maxScale = maxScale;
+    public void setMaxScale(double val) {
+        maxScale = val;
     }
 
     /*
@@ -124,12 +124,12 @@ public final class ScopePanel extends JPanel
 
         super.paintComponent(graphics);
 
-        int x = this.getWidth() / 2;
-        int y = this.getHeight() / 2;
+        int x = getWidth() / 2;
+        int y = getHeight() / 2;
 
         graphics.translate(x, y);
 
-        renderer.renderer(graphics, this.getWidth(), this.getHeight(), displayStep);
+        renderer.renderer(graphics, getWidth(), getHeight(), displayStep);
     }
 
     @Override
@@ -262,8 +262,8 @@ public final class ScopePanel extends JPanel
     }
 
     private void setMouseLatLon(int x, int y) {
-        double lon = (x - (this.getWidth() / 2)) / scale;
-        double lat = -(y - (this.getHeight() / 2)) / scale;
+        double lon = (x - (getWidth() / 2)) / scale;
+        double lat = -(y - (getHeight() / 2)) / scale;
 
         mouseLatLon = projection.convertToCoords(lat, lon);
     }

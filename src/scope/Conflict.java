@@ -25,9 +25,9 @@ public final class Conflict {
     private final TimerTask task;
 
     public Conflict(ProcessTracks pr, Config c) {
-        this.process = pr;
-        this.nav = new OrthographicNavigator();
-        this.config = c;
+        process = pr;
+        nav = new OrthographicNavigator();
+        config = c;
 
         alts = new ConcurrentHashMap<>(100);
 

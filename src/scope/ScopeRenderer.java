@@ -12,10 +12,10 @@ public abstract class ScopeRenderer {
     protected Config dc;
 
     public ScopeRenderer(Projection p, Navigator n, double s, Config c) {
-        this.projection = p;
-        this.navigator = n;
-        this.scale = s;
-        this.dc = c;
+        projection = p;
+        navigator = n;
+        scale = s;
+        dc = c;
     }
 
     /**
@@ -24,7 +24,7 @@ public abstract class ScopeRenderer {
      * @return projection The projection that is used by this renderer.
      */
     public Projection getProjection() {
-        return this.projection;
+        return projection;
     }
 
     /**
@@ -33,7 +33,7 @@ public abstract class ScopeRenderer {
      * @param val The projection to used.
      */
     public void setProjection(Projection val) {
-        this.projection = val;
+        projection = val;
     }
 
     /**
@@ -41,7 +41,7 @@ public abstract class ScopeRenderer {
      * @return navigator the navigator used.
      */
     public Navigator getNavigator() {
-        return this.navigator;
+        return navigator;
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class ScopeRenderer {
      * @param val The navigator to use.
      */
     public void setNavigator(Navigator val) {
-        this.navigator = val;
+        navigator = val;
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class ScopeRenderer {
      * @return scale The scale used when drawing (in pixels per meter).
      */
     public double getScale() {
-        return this.scale;
+        return scale;
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class ScopeRenderer {
      * @param val The scale to be used when drawing (in pixels per meter).
      */
     public void setScale(double val) {
-        this.scale = val;
+        scale = val;
     }
 
     /* 

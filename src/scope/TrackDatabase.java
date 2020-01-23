@@ -17,8 +17,8 @@ public final class TrackDatabase extends Thread {
     private ZuluMillis zulu;
 
     public TrackDatabase(ProcessTracks p, Config cf) {
-        this.process = p;
-        this.config = cf;
+        process = p;
+        config = cf;
         zulu = new ZuluMillis();
         EOF = false;
 
@@ -55,23 +55,19 @@ public final class TrackDatabase extends Thread {
     public void run() {
         Statement query = null;
         ResultSet rs = null;
-        String queryString, acid, tmp;
         Track track;
 
-        long utcnow, utcupdate;
-        int val;
-
         while (EOF == false) {
-            queryString = "SELECT * FROM target WHERE (acid,quality) IN ( SELECT acid, MAX(quality) FROM target GROUP BY acid) ORDER BY utcupdate";
+            String queryString = "SELECT * FROM target WHERE (acid,quality) IN ( SELECT acid, MAX(quality) FROM target GROUP BY acid) ORDER BY utcupdate";
 
             try {
                 query = db.createStatement();
                 rs = query.executeQuery(queryString);
-
+                long utcnow = zulu.getUTCTime();
+                
                 while (rs.next()) {
-                    acid = rs.getString("acid");
-                    utcnow = zulu.getUTCTime();
-                    utcupdate = rs.getLong("utcupdate");
+                    String acid = rs.getString("acid");
+                    long utcupdate = rs.getLong("utcupdate");
 
                     if ((utcnow - utcupdate) < (config.getIntegerSetting(Config.DISP_INSTRM_DIM) * 1000L)) {
                         if (!process.hasTrack(acid)) {
@@ -91,7 +87,7 @@ public final class TrackDatabase extends Thread {
                         track.setPosition(rs.getFloat("latitude"), rs.getFloat("longitude"), utcupdate);
                         track.setVerticalRateAndTrend(rs.getInt("verticalRate"), rs.getInt("verticalTrend"));
 
-                        val = rs.getInt("squawk");  // returns 0 on SQL null
+                        int val = rs.getInt("squawk");  // returns 0 on SQL null
 
                         if (val != 0) {
                             if (val < 100) {
@@ -143,7 +139,7 @@ public final class TrackDatabase extends Thread {
                         rs = query.executeQuery(queryString);
 
                         if (rs.next()) {
-                            tmp = rs.getString("acft_reg");
+                            String tmp = rs.getString("acft_reg");
 
                             try {
                                 if (tmp != null) {

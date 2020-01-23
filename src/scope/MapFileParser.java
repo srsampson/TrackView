@@ -80,7 +80,6 @@ public final class MapFileParser {
 
             if (!line.isEmpty()) {
                 parseLine(line);
-
             }
         }
     }
@@ -94,8 +93,9 @@ public final class MapFileParser {
         if (m.matches()) {
             int temp = Integer.parseInt(m.group(2));
             // In case someone puts a $Type=0 in, which is not correct syntax
-            if (temp == 0)
+            if (temp == 0) {
                 temp++;
+            }
 
             color = colorTable[temp - 1]; // array index 0..29
 

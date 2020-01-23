@@ -16,8 +16,8 @@ public final class DisplayConfigPanel extends JPanel
     private final Config dc;
     private final ConcurrentHashMap<String, DisplayConfigMenu> menus;
 
-    public DisplayConfigPanel(Config dc) {
-        this.dc = dc;
+    public DisplayConfigPanel(Config c) {
+        dc = c;
         Dimension d = new Dimension(215, 105);
         setPreferredSize(d);
         setMinimumSize(d);
@@ -74,7 +74,7 @@ public final class DisplayConfigPanel extends JPanel
         addIntegerButton(menu, Config.DISP_INSTRM_DROP, "DROP");
 
         addIntegerButton(menu, Config.DISP_INSTRM_TRANS, "TRANS");
-        this.addMenu(menu);
+        addMenu(menu);
 
         menu = new DisplayConfigMenu("COLORS");
         addColorButton(menu, Config.COLORS_TRACK, "TRACK", "LEVEL");
@@ -83,13 +83,13 @@ public final class DisplayConfigPanel extends JPanel
         addColorButton(menu, Config.COLORS_TRACK_HIST, "HIST", "LEVEL");
         addColorButton(menu, Config.COLORS_TRACK_DESCEND_HIST, "HIST", "DOWN");
         addColorButton(menu, Config.COLORS_TRACK_CLIMB_HIST, "HIST", "UP");
-        this.addMenu(menu);
+        addMenu(menu);
 
         menu = new DisplayConfigMenu("MAP");
         addToggleButton(menu, Config.MAP_OBJECTS, "OBJ", null);
         addToggleButton(menu, Config.MAP_VECTORS, "VEC", null);
         addToggleButton(menu, Config.MAP_NAMES, "NAM", null);
-        this.addMenu(menu);
+        addMenu(menu);
     }
 
     private void addEmptyButton(DisplayConfigMenu menu) {

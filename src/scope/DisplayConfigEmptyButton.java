@@ -11,18 +11,18 @@ public final class DisplayConfigEmptyButton extends JPanel {
         super();
 
         Dimension d = new Dimension(50, 35);
-        this.setPreferredSize(d);
-        this.setMinimumSize(d);
-        this.setSize(d);
+        setPreferredSize(d);
+        setMinimumSize(d);
+        setSize(d);
 
-        this.setLayout(null);
-        this.setOpaque(false);
-        this.setFocusable(false);
+        setLayout(null);
+        setOpaque(false);
+        setFocusable(false);
 
         if (showBorder) {
-            this.setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
+            setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
         } else {
-            this.setBorder(BorderFactory.createEmptyBorder());
+            setBorder(BorderFactory.createEmptyBorder());
         }
     }
 

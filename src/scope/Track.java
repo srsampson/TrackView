@@ -43,8 +43,7 @@ public final class Track {
     private long verticalTrend_time;
     private int verticalRate;
     private int verticalTrend;
-    private int[] trend = new int[10];
-    private int trend_el = 0;
+    private boolean verticalDIM;
     //
     private String callsign;
     private String acid;
@@ -82,48 +81,50 @@ public final class Track {
      * A track is the complete data structure of the Aircraft ID (acid). It
      * takes several different target reports to gather all the data, but this
      * is where it is finally stored.
-     * @param acid Aircraft ID
+     *
+     * @param a Aircraft ID
      * @param d Config params
      */
-    public Track(String acid, Config d) {
-        this.dc = d;
-        this.acid = acid;
-        this.callsign = "";
-        this.registration = "";
-        this.mode = MODE_NORMAL;
-        this.squawk = "0000";
-        this.latitude = 0.0;
-        this.longitude = 0.0;
-        this.altitude = -9999;
-        this.verticalRate = 0;
-        this.verticalTrend = 0;
-        this.alert = this.emergency = this.spi = this.mouseOver =
-                this.isOnGround = false;        // Might be on ground but no position
-        this.heading = 0.0;                    // Aircraft Magnetic heading (if known)
-        this.groundSpeed = 0.0;
-        this.groundTrack = 0.0;
-        this.updatedPosTime = 0L;
-        //this.verticalTrend_time = 0L;
-        this.updatedTime = 0L;
+    public Track(String a, Config d) {
+        long now = zulu.getUTCTime();
+        
+        dc = d;
+        acid = a;
+        callsign = "";
+        registration = "";
+        mode = MODE_NORMAL;
+        squawk = "0000";
+        latitude = 0.0;
+        longitude = 0.0;
+        altitude = -9999;
+        verticalRate = 0;
+        verticalTrend = 0;
+        alert = emergency = spi = mouseOver = isOnGround = false; // Might be on ground but no position
+        heading = 0.0;                    // Aircraft Magnetic heading (if known)
+        groundSpeed = 0.0;
+        groundTrack = 0.0;
+        updatedPosTime = 0L;        // might not have a position
+        verticalTrend_time = now;   // good default
+        updatedTime = now;           // good default
+        verticalDIM = false;
 
         /*
          * Some planes don't ever send a velocity message, so assume the worst
          */
-        this.useComputed = true;
-        this.computedGroundSpeed = 0.0;        // Some planes don't send speed
-        this.computedGroundTrack = 0.0;        // Some planes don't send heading
-        //this.echoHistory = new ArrayList<>();
-        this.sites = new ArrayList<>();
-        this.conflicts = new ConcurrentHashMap<>();
-        this.trackOptions = new ConcurrentHashMap<>();
+        useComputed = true;
+        computedGroundSpeed = 0.0;        // Some planes don't send speed
+        computedGroundTrack = 0.0;        // Some planes don't send heading
+        sites = new ArrayList<>();
+        conflicts = new ConcurrentHashMap<>();
+        trackOptions = new ConcurrentHashMap<>();
 
         try {
             // de-clutter the track by making it dim
-            this.trackOptions.put(TRACKBLOCK_DIM, Boolean.FALSE);
+            trackOptions.put(TRACKBLOCK_DIM, Boolean.FALSE);
             // highlight the track by making it brighter
-            this.trackOptions.put(TRACKBLOCK_BRIGHT, Boolean.FALSE);
+            trackOptions.put(TRACKBLOCK_BRIGHT, Boolean.FALSE);
             // One of six positions around the clock
-            this.trackOptions.put(TRACKBLOCK_POSITION, 0);
+            trackOptions.put(TRACKBLOCK_POSITION, 0);
         } catch (NullPointerException e) {
             System.err.println("Track::Constructor exception during initialization put " + e.toString());
         }
@@ -135,23 +136,23 @@ public final class Track {
      * @return a String Representing the 6-character ICAO ID
      */
     public String getAcid() {
-        return this.acid;
+        return acid;
     }
 
     public void setHeading(double head) {
-        this.heading = head;
+        heading = head;
     }
 
     public double getHeading() {
-        return this.heading;
+        return heading;
     }
-    
+
     public void setMouseOver(boolean val) {
-        this.mouseOver = val;
+        mouseOver = val;
     }
 
     public boolean isMouseOver() {
-        return this.mouseOver;
+        return mouseOver;
     }
 
     /**
@@ -160,20 +161,20 @@ public final class Track {
      * @return a long representing the time in milliseconds
      */
     public long getUpdatedTime() {
-        return this.updatedTime;
+        return updatedTime;
     }
 
     /**
      * Method to store the time this track was last updated
      *
-     * @param var a long Representing the time in milliseconds
+     * @param val a long Representing the time in milliseconds
      */
-    public void setUpdatedTime(long var) {
-        this.updatedTime = var;
+    public void setUpdatedTime(long val) {
+        updatedTime = val;
     }
 
     public ConcurrentHashMap<String, Object> getTrackOptions() {
-        return this.trackOptions;
+        return trackOptions;
     }
 
     public Object getTrackOption(String option) {
@@ -206,57 +207,58 @@ public final class Track {
     }
 
     //public void setUseComputed(boolean val) {
-    //    this.useComputed = val;
+    //    useComputed = val;
     //}
     public boolean getUseComputed() {
-        return this.useComputed;
+        return useComputed;
     }
 
     public long getUpdatedPosTime() {
-        return this.updatedPosTime;
+        return updatedPosTime;
     }
 
     /**
      * Method to set the callsign
      *
-     * <p>Don't change the callsign to blank if it was a good value
+     * <p>
+     * Don't change the callsign to blank if it was a good value
      *
      * @param val a string representing the track callsign
      */
     public void setCallsign(String val) {
-        if (!this.callsign.equals(val)) {
+        if (!callsign.equals(val)) {
             if (!val.equals("")) {
-                this.callsign = val;
+                callsign = val;
             }
         }
     }
 
     public String getCallsign() {
-        return this.callsign;
+        return callsign;
     }
 
     public void setRegistration(String val) {
-        if (!this.registration.equals(val)) {
+        if (!registration.equals(val)) {
             if (!val.equals("")) {
-                this.registration = val;
+                registration = val;
             }
         }
     }
 
     public String getRegistration() {
-        return this.registration;
+        return registration;
     }
-    
+
     public int getSiteCount() {
-        return this.sites.size();
+        return sites.size();
     }
 
     public void addSiteID(String val) {
         try {
-            if (!this.sites.contains(val)) {
-                this.sites.add(val);
-                
-                if (this.sites.size() > 1) {
+            if (!sites.contains(val)) {
+                sites.add(val);
+
+                if (sites.size() > 1) {
                     mode = MODE_GLOBAL;
                 }
             }
@@ -265,19 +267,19 @@ public final class Track {
     }
 
     public String[] getSites() {
-        return (String[]) this.sites.toArray();
+        return (String[]) sites.toArray();
     }
 
     public void clearSites() {
-        this.sites.clear();
+        sites.clear();
     }
 
     public int getMode() {
-        return this.mode;
+        return mode;
     }
 
     public void setMode(int val) {
-        this.mode = val;
+        mode = val;
     }
 
     /**
@@ -286,8 +288,8 @@ public final class Track {
      * @param val a String Representing the targets Mode-3A 4-digit octal code
      */
     public void setSquawk(String val) {
-        if (!this.squawk.equals(val)) {
-            this.squawk = val;
+        if (!squawk.equals(val)) {
+            squawk = val;
         }
     }
 
@@ -297,7 +299,7 @@ public final class Track {
      * @return a String Representing the track Mode-3A 4-digit octal code
      */
     public String getSquawk() {
-        return this.squawk;
+        return squawk;
     }
 
     /**
@@ -307,7 +309,7 @@ public final class Track {
      */
     public void setAltitude(int val) {
         if (val != -9999) {
-            this.altitude = val;
+            altitude = val;
         }
     }
 
@@ -317,174 +319,187 @@ public final class Track {
      * @return an integer representing the track altitude in feet
      */
     public int getAltitude() {
-        return this.altitude;
+        return altitude;
     }
 
     public int getVerticalRate() {
-        return this.verticalRate;
+        return verticalRate;
     }
 
     public synchronized int getVerticalTrend() {
-        return this.verticalTrend;
+        if (verticalDIM == true) {
+            return 0;   // level
+        }
+        
+        return verticalTrend;
     }
 
-    public synchronized void setVerticalTrendZero() {
-        verticalTrend = 0;
-        verticalTrend_time = zulu.getUTCTime();
+    public synchronized void setVerticalDIM() {
+        verticalDIM = true;
     }
 
+    /**
+     *
+     * @param val1 vertical rate in fps
+     * @param val2 trend -1, 0, or 1
+     */
     public synchronized void setVerticalRateAndTrend(int val1, int val2) {
-        this.verticalRate = val1;
-
-        verticalTrend = val2;
-        verticalTrend_time = zulu.getUTCTime();
+        if (verticalRate != val1) {
+            verticalRate = val1;
+        }
+        
+        if (verticalTrend != val2) {
+            verticalTrend = val2;
+            verticalTrend_time = zulu.getUTCTime();
+        }
     }
 
     public synchronized long getVerticalTrendUpdateTime() {
-        return this.verticalTrend_time;
+        return verticalTrend_time;
     }
 
     public boolean getAlert() {
-        return this.alert;
+        return alert;
     }
 
     public void setAlert(boolean val) {
-        if (this.alert != val) {
+        if (alert != val) {
             if (val == true) {
-                this.mode = MODE_IDENT;
+                mode = MODE_IDENT;
             } else {
-                this.mode = MODE_NORMAL;
+                mode = MODE_NORMAL;
             }
 
-            this.alert = val;
+            alert = val;
         }
     }
 
     public boolean getEmergency() {
-        return this.emergency;
+        return emergency;
     }
 
     public void setEmergency(boolean val) {
-        if (this.emergency != val) {
+        if (emergency != val) {
             if (val == true) {
-                this.mode = MODE_IDENT;
+                mode = MODE_IDENT;
             } else {
-                this.mode = MODE_NORMAL;
+                mode = MODE_NORMAL;
             }
 
-            this.emergency = val;
+            emergency = val;
         }
     }
 
     public boolean getSPI() {
-        return this.spi;
+        return spi;
     }
 
     public void setSPI(boolean val) {
-        if (this.spi != val) {
+        if (spi != val) {
             if (val == true) {
-                this.mode = MODE_IDENT;
+                mode = MODE_IDENT;
             } else {
-                this.mode = MODE_NORMAL;
+                mode = MODE_NORMAL;
             }
 
-            this.spi = val;
+            spi = val;
         }
     }
 
     public void setIsOnGround(boolean val) {
-        if (this.isOnGround != val) {
+        if (isOnGround != val) {
             if (val == true) {
-                this.mode = MODE_STANDBY;
+                mode = MODE_STANDBY;
             } else {
-                this.mode = MODE_NORMAL;
+                mode = MODE_NORMAL;
             }
 
-            this.isOnGround = val;
+            isOnGround = val;
         }
     }
 
     public boolean getIsOnGround() {
-        return this.isOnGround;
+        return isOnGround;
     }
 
     public void setGroundSpeed(double val) {
-        this.groundSpeed = val;
+        groundSpeed = val;
 
         if (val != 0.0) {
-            this.useComputed = false;
+            useComputed = false;
         }
     }
 
     public double getGroundSpeed() {
-        return this.groundSpeed;
+        return groundSpeed;
     }
 
     public void setGroundTrack(double val) {
-        this.groundTrack = val;
+        groundTrack = val;
     }
 
     public double getGroundTrack() {
-        return this.groundTrack;
+        return groundTrack;
     }
 
     public void setComputedGroundTrack(double val) {
-        this.computedGroundTrack = val;
+        computedGroundTrack = val;
     }
 
     public void setComputedGroundSpeed(double val) {
-        this.computedGroundSpeed = val;
+        computedGroundSpeed = val;
     }
 
     public double getComputedGroundTrack() {
-        return this.computedGroundTrack;
+        return computedGroundTrack;
     }
 
     public double getComputedGroundSpeed() {
-        return this.computedGroundSpeed;
+        return computedGroundSpeed;
     }
 
     public void setPosition(double lat, double lon, long time) {
-        if ((this.latitude != lat) && (this.longitude != lon)) {
+        if ((latitude != lat) && (longitude != lon)) {
             /*
              * If a good position is followed by a 0.0 then keep the old
              * position
              */
             if (lat != 0.0 && lon != 0.0) {
-                this.latitude = lat;
-                this.longitude = lon;
-                this.updatedPosTime = time;
-                this.setTrackBooleanOption(TRACKBLOCK_DIM, Boolean.FALSE);
+                latitude = lat;
+                longitude = lon;
+                updatedPosTime = time;
+                setTrackBooleanOption(TRACKBLOCK_DIM, Boolean.FALSE);
+                verticalDIM = false;
             }
         }
     }
 
     public LatLon getPosition() {
-        return new LatLon(this.latitude, this.longitude);
+        return new LatLon(latitude, longitude);
     }
 
     public double getLatitude() {
-        return this.latitude;
+        return latitude;
     }
 
     public double getLongitude() {
-        return this.longitude;
+        return longitude;
     }
 
     public double getBearing() {
-        return this.bearing;
+        return bearing;
     }
 
-    public void setBearing(double bearing) {
-        this.bearing = bearing;
+    public void setBearing(double val) {
+        bearing = val;
     }
 
     public double getRange() {
-        return this.range;
+        return range;
     }
 
-    public void setRange(double range) {
-        this.range = range;
+    public void setRange(double val) {
+        range = val;
     }
 
     public synchronized String[] getConflicts() {
@@ -566,7 +581,6 @@ public final class Track {
         /*
          * Possible that track position hasn't been received yet
          */
-
         if (Pos.lat == 0.0 && Pos.lon == 0.0) {
             return Pos;
         }

@@ -18,30 +18,30 @@ public final class DisplayConfigColorButton extends JButton implements ActionLis
     private final String line2;
     private final Config dc;
 
-    public DisplayConfigColorButton(String key, String line1, String line2, Config c) {
+    public DisplayConfigColorButton(String k, String l1, String l2, Config c) {
         super();
 
-        this.key = key;
+        key = k;
 
-        this.line1 = line1;
-        this.line2 = line2;
+        line1 = l1;
+        line2 = l2;
 
-        this.dc = c;
+        dc = c;
 
         Dimension d = new Dimension(50, 35);
-        this.setPreferredSize(d);
-        this.setMinimumSize(d);
-        this.setSize(d);
+        setPreferredSize(d);
+        setMinimumSize(d);
+        setSize(d);
 
-        this.setOpaque(false);
-        this.setFocusable(false);
+        setOpaque(false);
+        setFocusable(false);
 
-        this.setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
-        this.setForeground(Config.NORMAL_WHITE);
-        this.setBackground(Config.LOW_WHITE);
+        setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
+        setForeground(Config.NORMAL_WHITE);
+        setBackground(Config.LOW_WHITE);
 
-        this.setActionCommand(CMD_CLICK);
-        this.addActionListener(this);
+        setActionCommand(CMD_CLICK);
+        addActionListener(this);
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class DisplayConfigColorButton extends JButton implements ActionLis
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this && e.getActionCommand().equals(CMD_CLICK)) {
             Color oldColor = dc.getColorSetting(key);
-            Color newColor = JColorChooser.showDialog(this.getRootPane(), "Color", oldColor);
+            Color newColor = JColorChooser.showDialog(getRootPane(), "Color", oldColor);
 
             dc.changeColorSetting(key, newColor);
         }

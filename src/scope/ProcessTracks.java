@@ -26,9 +26,9 @@ public final class ProcessTracks {
      * @param c a reference to the configuration class
      */
     public ProcessTracks(Config c) {
-        this.config = c;
-        this.tracks = new ConcurrentHashMap<>();
-        this.nav = new OrthographicNavigator();
+        config = c;
+        tracks = new ConcurrentHashMap<>();
+        nav = new OrthographicNavigator();
 
         task1 = new TimeoutThread1();
         timer1 = new Timer();
@@ -164,8 +164,7 @@ public final class ProcessTracks {
     }
 
     /**
-     * This is the Track with position values DIM, conflict and Echo remove
-     * timer
+     * This is the Track with position values DIM and conflict timer
      */
     class TimeoutThread1 extends TimerTask {
 
@@ -203,11 +202,12 @@ public final class ProcessTracks {
                          * If track hasn't been updated in xx seconds or more
                          * then signal the track block to go dim if it isn't
                          * already and to delete all conflict alerts pointing to
-                         * this track
+                         * this track. Also set vertical trend to level.
                          */
                         if (delta >= dimtime) {
                             if (track.getTrackOption(Track.TRACKBLOCK_DIM).equals(Boolean.FALSE)) {
                                 track.setTrackBooleanOption(Track.TRACKBLOCK_DIM, Boolean.TRUE);
+                                track.setVerticalDIM();
                             }
 
                             /*
@@ -226,19 +226,6 @@ public final class ProcessTracks {
                              */
                             track.removeAllConflict();
                         }
-                    }
-
-                    /*
-                     * If target verticalTrend hasn't been updated in 30 seconds
-                     * or more then set the verticalTrend to 0;
-                     * 
-                     * While this could apply to non position targets, it's mostly a
-                     * display problem, where DIM tracks are climb or descend color.
-                     */
-                    delta = Math.abs(currentTime - track.getVerticalTrendUpdateTime());
-
-                    if (delta >= TIMEOUT) {
-                        track.setVerticalTrendZero();
                     }
                 } catch (Exception e2) {
                 }

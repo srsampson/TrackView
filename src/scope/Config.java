@@ -973,11 +973,11 @@ public final class Config {
     }
 
     public void addIntegerSetting(String name, int value, int min, int max) {
-        this.addIntegerSetting(name, value, 1, min, max);
+        addIntegerSetting(name, value, 1, min, max);
     }
 
     public void addIntegerSetting(String name, int value) {
-        this.addIntegerSetting(name, value, 1, 0, 32000);
+        addIntegerSetting(name, value, 1, 0, 32000);
     }
 
     public void addColorSetting(String name, Color color) {

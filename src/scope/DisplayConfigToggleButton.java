@@ -15,37 +15,37 @@ public final class DisplayConfigToggleButton extends JToggleButton implements Ac
     private final String line2;
     private final Config dc;
 
-    public DisplayConfigToggleButton(String key, String line1, String line2, Config c) {
+    public DisplayConfigToggleButton(String k, String l1, String l2, Config c) {
         super();
 
-        this.key = key;
-        this.line1 = line1;
-        this.line2 = line2;
+        key = k;
+        line1 = l1;
+        line2 = l2;
 
-        this.dc = c;
+        dc = c;
 
         Dimension d = new Dimension(50, 35);
-        this.setPreferredSize(d);
-        this.setMinimumSize(d);
-        this.setSize(d);
+        setPreferredSize(d);
+        setMinimumSize(d);
+        setSize(d);
 
-        this.setOpaque(false);
-        this.setFocusable(false);
+        setOpaque(false);
+        setFocusable(false);
 
-        this.setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
-        this.setForeground(Config.NORMAL_WHITE);
-        this.setBackground(Config.LOW_WHITE);
+        setBorder(BorderFactory.createLineBorder(Config.NORMAL_WHITE));
+        setForeground(Config.NORMAL_WHITE);
+        setBackground(Config.LOW_WHITE);
 
-        this.addActionListener(this);
+        addActionListener(this);
 
-        this.setSelected(dc.getBooleanSetting(key));
+        setSelected(dc.getBooleanSetting(key));
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        if (this.isSelected()) {
+        if (isSelected()) {
             graphics.setColor(Config.LOW_WHITE);
-            graphics.fillRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
+            graphics.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
 
             graphics.setColor(Config.HIGH_WHITE);
         } else {
@@ -70,7 +70,7 @@ public final class DisplayConfigToggleButton extends JToggleButton implements Ac
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this) {
             dc.toggleBooleanSetting(key);
-            this.setSelected(dc.getBooleanSetting(key));
+            setSelected(dc.getBooleanSetting(key));
         }
     }
 }

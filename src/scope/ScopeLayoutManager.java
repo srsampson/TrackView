@@ -10,8 +10,8 @@ public final class ScopeLayoutManager implements LayoutManager {
 
     private final ScopeFrame scopeFrame;
 
-    public ScopeLayoutManager(ScopeFrame scopeFrame) {
-        this.scopeFrame = scopeFrame;
+    public ScopeLayoutManager(ScopeFrame val) {
+        scopeFrame = val;
     }
 
     @Override

@@ -13,8 +13,8 @@ public final class DisplayConfigMenu extends JPanel {
     private final String name;
     private final List<JComponent> buttons;
 
-    public DisplayConfigMenu(String name) {
-        this.name = name;
+    public DisplayConfigMenu(String val) {
+        name = val;
         Dimension d = new Dimension(209, 0);
         setPreferredSize(d);
         setMinimumSize(d);

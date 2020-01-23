@@ -13,8 +13,8 @@ public final class LatLon implements Serializable {
      * Initialized to zero
      */
     public LatLon() {
-        this.lat = 0.0;
-        this.lon = 0.0;
+        lat = 0.0;
+        lon = 0.0;
     }
 
     /**
@@ -24,23 +24,23 @@ public final class LatLon implements Serializable {
      * @param val2 longitude
      */
     public LatLon(double val1, double val2) {
-        this.lat = val1;
-        this.lon = val2;
+        lat = val1;
+        lon = val2;
     }
     
     public double getLongitude() {
-        return this.lon;
+        return lon;
     }
 
     public double getLatitude() {
-        return this.lat;
+        return lat;
     }
 
     public void setLongitude(double longitude) {
-        this.lon = longitude;
+        lon = longitude;
     }
 
     public void setLatitude(double latitude) {
-        this.lat = latitude;
+        lat = latitude;
     }
 }
