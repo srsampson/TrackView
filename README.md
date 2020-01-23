@@ -1,4 +1,4 @@
-#### TrackView - A Java ADS-B Track Display Program using MySQL
+#### TrackView - A Java ADS-B Track Display Program using MySQL database
 This is a simple viewer that allows you to see the tracks visually on a 2D display. When started, the program reads a configuration file, and a map file in the directory it is run from. It then connects to the database, and decodes and displays the data. The database is populated with the ```ADSBMySQL``` application.
 
 ![My image](https://raw.githubusercontent.com/srsampson/TrackView/master/screenshot.png)
