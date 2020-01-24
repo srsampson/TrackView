@@ -10,7 +10,6 @@ import math.OrthographicNavigator;
 public final class ProcessTracks {
 
     private static final long RATE = 1500L;                 // 1.5 second
-    private static final long TIMEOUT = 30L * 1000L;        // 30 seconds
     //
     private final Config config;
     //
@@ -128,10 +127,7 @@ public final class ProcessTracks {
         }
     }
 
-    /*
-     * This is only called locally so far
-     */
-    private void removeTrack(String acid) {
+    public void removeTrack(String acid) {
         synchronized (tracks) {
             if (acid != null) {
                 if (tracks.containsKey(acid) == true) {

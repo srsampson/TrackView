@@ -56,15 +56,32 @@ public final class TrackDatabase extends Thread {
         Statement query = null;
         ResultSet rs = null;
         Track track;
-
+        int lowAltitude, highAltitude;
+        String queryString;
+        
         while (EOF == false) {
-            String queryString = "SELECT * FROM target WHERE (acid,quality) IN ( SELECT acid, MAX(quality) FROM target GROUP BY acid) ORDER BY utcupdate";
+            lowAltitude = config.getIntegerSetting(Config.DISP_INSTRM_LOW) * 100;
+            highAltitude = config.getIntegerSetting(Config.DISP_INSTRM_HIGH) * 100;
+            
+            lowAltitude -= 1000;    // account for pressure 
+            
+            //
+            // We assume that one or more radars are populating
+            // the database. Thus, the ACID will appear more than
+            // once, and may have different track quality values,
+            // so pick the greatest track quality.
+            //
+            queryString = String.format("SELECT * FROM adsb.target WHERE (acid,quality) "
+                    + "IN (SELECT acid,MAX(quality) FROM adsb.target GROUP BY acid) "
+                    + "HAVING altitude >= %d && altitude <= %d",
+                    lowAltitude,
+                    highAltitude);
 
             try {
                 query = db.createStatement();
                 rs = query.executeQuery(queryString);
                 long utcnow = zulu.getUTCTime();
-                
+
                 while (rs.next()) {
                     String acid = rs.getString("acid");
                     long utcupdate = rs.getLong("utcupdate");
@@ -169,6 +186,19 @@ public final class TrackDatabase extends Thread {
                 }
             }
 
+            //
+            // Altitude window may have changed, so drop all Tracks
+            // outside of the window the user has selected.
+            //
+            for (Track trk : process.getTrackListWithPositions()) {
+                int alt = trk.getAltitude();
+                String ac = trk.getAcid();
+                
+                if ((alt < lowAltitude) || (alt > highAltitude)) {
+                    process.removeTrack(ac);
+                }
+            }
+            
             /*
              * Take a nap
              */

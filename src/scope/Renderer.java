@@ -121,35 +121,24 @@ public final class Renderer extends ScopeRenderer {
                     System.err.println("Renderer::render Exception during option get " + e.toString());
                 }
 
-                top = dc.getIntegerSetting(Config.DISP_INSTRM_HIGH) * 100;
-                bottom = dc.getIntegerSetting(Config.DISP_INSTRM_LOW) * 100;
+                p = track.getPosition();        // lat/lon
+                m = projection.convertToMeters(p);
+                x = (int) (m.lon * scale);
+                y = (int) (m.lat * (-scale));
 
-                if (bottom == 0) {
-                    bottom = -1000;     // account for pressure altitude
-                }
-
-                if ((alt >= bottom) && (alt <= top)) {
-                    p = track.getPosition();        // lat/lon
-                    m = projection.convertToMeters(p);
-                    x = (int) (m.lon * scale);
-                    y = (int) (m.lat * (-scale));
-
-                    if (track.getIsOnGround() == true) {      // On Ground
-                        // This just paints the Hex ID and GroundSpeed
-                        paintGndBlock(x, y, track, graph);
-                        paint_echo = dc.getBooleanSetting(Config.DISP_INSTRM_GND_ECHO);
-                    } else {                // not on ground
-                        if (p.lon != 0.0 && p.lat != 0.0) {
-                            if (!Double.isNaN(p.lon) || !Double.isNaN(p.lat)) {
-                                paintSpeedVector(p, track, graph, dim);
-                            }
+                if (track.getIsOnGround() == true) {      // On Ground
+                    // This just paints the Hex ID and GroundSpeed
+                    paintGndBlock(x, y, track, graph);
+                    paint_echo = dc.getBooleanSetting(Config.DISP_INSTRM_GND_ECHO);
+                } else {                // not on ground
+                    if (p.lon != 0.0 && p.lat != 0.0) {
+                        if (!Double.isNaN(p.lon) || !Double.isNaN(p.lat)) {
+                            paintSpeedVector(p, track, graph, dim);
                         }
-
-                        paintAircraft(x, y, track, graph, displayStep, dim);
-                        paint_echo = true;  // always paint echo for airborne
                     }
-                } else {
-                    paint_echo = false; // except when outside of plotting altitudes
+
+                    paintAircraft(x, y, track, graph, displayStep, dim);
+                    paint_echo = true;  // always paint echo for airborne
                 }
 
                 /*

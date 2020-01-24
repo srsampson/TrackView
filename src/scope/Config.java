@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class Config {
 
+    public static final String VERSION = "TrackViewer-1.91";
+    //
     public static final Color NORMAL_WHITE = new Color(231, 231, 231);
     public static final Color HIGH_WHITE = new Color(239, 239, 239);
     public static final Color LOW_WHITE = new Color(66, 66, 66);
@@ -122,7 +124,7 @@ public final class Config {
     private final Timestamp sqlTime;
     private final ZuluMillis zulu;
     //
-    private Color[] colorMap;
+    private final Color[] colorMap;
     private String databaseName;
     private String databaseHost;
     private String databasePort;
@@ -240,7 +242,7 @@ public final class Config {
             homeLon = 0.0D;
         }
 
-        temp = Props.getProperty(STATION_NAME, "TrackViewer-1.91").trim();
+        temp = Props.getProperty(STATION_NAME, VERSION).trim();
         Props.setProperty(STATION_NAME, temp);
         homeName = temp;
 
@@ -354,10 +356,10 @@ public final class Config {
         temp = Props.getProperty(DISP_INSTRM_LOW, "0 10 0 995");
         Props.setProperty(DISP_INSTRM_LOW, temp);
         token = temp.split(" ");
-        v1 = Integer.parseInt(token[0].trim());
-        v2 = Integer.parseInt(token[1].trim());
-        v3 = Integer.parseInt(token[2].trim());
-        v4 = Integer.parseInt(token[3].trim());
+        v1 = Integer.parseInt(token[0].trim()); // default
+        v2 = Integer.parseInt(token[1].trim()); // increment
+        v3 = Integer.parseInt(token[2].trim()); // minimum
+        v4 = Integer.parseInt(token[3].trim()); // maximum
 
         addIntegerSetting(DISP_INSTRM_LOW, v1, v2, v3, v4);
 
