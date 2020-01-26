@@ -77,7 +77,8 @@ public final class Renderer extends ScopeRenderer {
         ResultSet rs = null;
         String queryString;
         LatLon p, m;
-        int x, y, alt, top, bottom, vert;
+        int x, y, vert;
+        int lowAltitude, highAltitude;
         boolean dim = false;
         boolean paint_echo;
 
@@ -92,7 +93,9 @@ public final class Renderer extends ScopeRenderer {
         graph.setFont(dc.getFontSetting(Config.DISP_INSTRM_FONT));
         
         echoLimit = ((dc.getIntegerSetting(Config.DISP_INSTRM_ECHOES) * 60L) + 10L) * 1000L;
-
+        lowAltitude = dc.getIntegerSetting(Config.DISP_INSTRM_LOW) * 100;
+        highAltitude = dc.getIntegerSetting(Config.DISP_INSTRM_HIGH) * 100;
+            
         // mapGeoData is null until map data is finally read from file
         if (mapGeoData != null) {
             //paintMapObjects(graph);
@@ -111,8 +114,6 @@ public final class Renderer extends ScopeRenderer {
             long currentTime = zulu.getUTCTime();
 
             for (Track track : tracks) {
-                alt = track.getAltitude();
-
                 option = track.getTrackOptions();
 
                 try {
@@ -147,9 +148,12 @@ public final class Renderer extends ScopeRenderer {
                 if (paint_echo) {
                     try {
                         queryString = String.format("SELECT latitude,longitude,verticalTrend"
-                                + " FROM targetecho WHERE acid='%s' && (utcdetect > %d) ORDER BY "
+                                + " FROM targetecho WHERE acid='%s' && altitude >= %d &&"
+                                + " altitude <= %d && utcdetect > %d ORDER BY "
                                 + "utcdetect DESC",
                                 track.getAcid(),
+                                lowAltitude,
+                                highAltitude,
                                 (currentTime - echoLimit));
 
                         try {

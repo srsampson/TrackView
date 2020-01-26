@@ -63,7 +63,7 @@ public final class TrackDatabase extends Thread {
             lowAltitude = config.getIntegerSetting(Config.DISP_INSTRM_LOW) * 100;
             highAltitude = config.getIntegerSetting(Config.DISP_INSTRM_HIGH) * 100;
             
-            lowAltitude -= 1000;    // account for pressure 
+            lowAltitude -= 1000;    // account for pressure altitude
             
             //
             // We assume that one or more radars are populating
