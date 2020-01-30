@@ -66,6 +66,8 @@ public final class Main {
         procTrack = new ProcessTracks(config);
         db = new TrackDatabase(procTrack, config);
 
+        db.startDatabase();
+        
         Runtime.getRuntime().addShutdownHook(new Shutdown(procTrack, db));
 
         f = new ScopeFrame(config, db, procTrack);        // Create a new display Panel

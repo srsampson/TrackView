@@ -5,25 +5,41 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public final class TrackDatabase extends Thread {
 
+    private static final long RATE1 = 15L * 60L * 1000L;    // 15 minutes
+    //
     private Thread database;
     private static boolean EOF;
+    private boolean metarValid;
+    //
+    private int pressureAlt;
+    //
+    private String airport;
     //
     private Config config;
     private ProcessTracks process;
     private Connection db;
     private ZuluMillis zulu;
-
+    //
+    private final Timer timer1;
+    private final TimerTask task1;
+    
     public TrackDatabase(ProcessTracks p, Config cf) {
         process = p;
         config = cf;
         zulu = new ZuluMillis();
         EOF = false;
+        metarValid = false;
+        pressureAlt = 0;
 
         database = new Thread(this);
         database.setName("TrackDatabase");
+
+        airport = cf.getHomeName().trim();     // might be version number instead of airport
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -33,10 +49,17 @@ public final class TrackDatabase extends Thread {
             System.exit(-1);
         }
 
+        task1 = new MetarRefresh();
+        timer1 = new Timer();
+    }
+    
+    public void startDatabase() {
         database.start();
+        timer1.scheduleAtFixedRate(task1, 0L, RATE1);
     }
 
-    public void close() {
+    public void closeDatabase() {
+        timer1.cancel();
         EOF = true;
 
         try {
@@ -51,6 +74,54 @@ public final class TrackDatabase extends Thread {
         return db;
     }
 
+    class MetarRefresh extends TimerTask {
+
+        @Override
+        public void run() {
+            Statement query = null;
+            ResultSet rs = null;
+            String queryString;
+            
+            // read the latest metar from database
+            queryString = String.format("SELECT t.airport, t.utcupdate, t.pressureAlt FROM "
+                    + "adsb.metar t INNER JOIN (SELECT airport, MAX(utcupdate) AS "
+                    + "MaxDate FROM adsb.metar GROUP BY airport) tm "
+                    + "ON t.airport = tm.airport "
+                    + "AND t.utcupdate = tm.MaxDate "
+                    + "AND t.airport = '%s'",
+                    airport);
+
+            try {
+                query = db.createStatement();
+                rs = query.executeQuery(queryString);
+                
+                if (rs.next()) {
+                    pressureAlt = rs.getInt("pressureAlt");
+                    metarValid = true;
+                } else {
+                    metarValid = false;
+                }
+                
+                query.close();
+            } catch (SQLException e2) {
+                System.err.println("MetarRefresh::Select error " + e2.getMessage());
+            } finally {
+                if (rs != null) {
+                    try {
+                        rs.close();
+                    } catch (SQLException e) {
+                    }
+                }
+                if (query != null) {
+                    try {
+                        query.close();
+                    } catch (SQLException e) {
+                    }
+                }
+            }
+        }
+    }
+    
     @Override
     public void run() {
         Statement query = null;
@@ -95,7 +166,16 @@ public final class TrackDatabase extends Thread {
                         }
 
                         track.setUpdatedTime(utcupdate);
-                        track.setAltitude(rs.getInt("altitude"));
+                        
+                        int alt = rs.getInt("altitude");
+                        track.setAltitude(alt);
+                        
+                        if ((alt < 36000) && (metarValid == true)) {
+                            track.setAMSLAltitude(alt - pressureAlt);
+                        } else {
+                            track.setAMSLAltitudeZero();
+                        }
+                        
                         track.setGroundSpeed(rs.getFloat("groundSpeed"));
                         track.setGroundTrack(rs.getFloat("groundTrack"));
                         track.setComputedGroundSpeed(rs.getFloat("gsComputed"));

@@ -15,7 +15,7 @@ public final class Shutdown extends Thread {
         System.out.println("Shutdown started");
 
         procTrack.close();
-        db.close();
+        db.closeDatabase();
 
         System.runFinalization();
     }

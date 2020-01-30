@@ -159,7 +159,7 @@ public final class Renderer extends ScopeRenderer {
                         try {
                             query = db.createStatement();
                             rs = query.executeQuery(queryString);
-                        } catch (SQLException esql) {
+                        } catch (SQLException e7) {
                             query.close();
                             continue;
                         }
@@ -188,7 +188,7 @@ public final class Renderer extends ScopeRenderer {
 
                                         graph.fillOval(x, y, dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE), dc.getIntegerSetting(Config.DISP_INSTRM_ESIZE) + 1);
                                     }
-                                } catch (Exception e) {
+                                } catch (Exception e8) {
                                 }
                             }
                         }
@@ -197,13 +197,13 @@ public final class Renderer extends ScopeRenderer {
                         if (rs != null) {
                             try {
                                 rs.close();
-                            } catch (SQLException e) {
+                            } catch (SQLException e10) {
                             }
                         }
                         if (query != null) {
                             try {
                                 query.close();
-                            } catch (SQLException e) {
+                            } catch (SQLException e11) {
                             }
                         }
                     }
@@ -393,7 +393,13 @@ public final class Renderer extends ScopeRenderer {
             } else if (actualAlt >= ta) {
                 secondLine += "F" + nf3.format(actualAlt / 100);
             } else {
-                secondLine += "A" + nf3.format(actualAlt / 100);
+                int amsl = track.getAMSLAltitude();
+
+                if (amsl != 0) {
+                    secondLine += "A" + nf3.format(amsl / 100);
+                } else {
+                    secondLine += "A" + nf3.format(actualAlt / 100);
+                }
             }
 
             secondLine += " ";

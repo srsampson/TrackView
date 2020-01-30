@@ -51,6 +51,7 @@ public final class Track {
     private int mode;
     private String squawk;
     private int altitude;
+    private int amsl_altitude;
     //
     private boolean mouseOver;
     private boolean alert;
@@ -97,6 +98,7 @@ public final class Track {
         latitude = 0.0;
         longitude = 0.0;
         altitude = -9999;
+        amsl_altitude = 0;
         verticalRate = 0;
         verticalTrend = 0;
         alert = emergency = spi = mouseOver = isOnGround = false; // Might be on ground but no position
@@ -322,6 +324,18 @@ public final class Track {
         return altitude;
     }
 
+    public void setAMSLAltitude(int altCorrected) {
+        amsl_altitude = altCorrected;
+    }
+
+    public void setAMSLAltitudeZero() {
+        amsl_altitude = 0;
+    }
+
+    public int getAMSLAltitude() {
+        return amsl_altitude;
+    }
+    
     public int getVerticalRate() {
         return verticalRate;
     }
