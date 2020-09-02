@@ -23,7 +23,6 @@ public final class TrackDatabase extends Thread {
     private Config config;
     private ProcessTracks process;
     private Connection db;
-    private ZuluMillis zulu;
     //
     private final Timer timer1;
     private final TimerTask task1;
@@ -31,7 +30,6 @@ public final class TrackDatabase extends Thread {
     public TrackDatabase(ProcessTracks p, Config cf) {
         process = p;
         config = cf;
-        zulu = new ZuluMillis();
         EOF = false;
         metarValid = false;
         pressureAlt = 0;
@@ -151,7 +149,7 @@ public final class TrackDatabase extends Thread {
             try {
                 query = db.createStatement();
                 rs = query.executeQuery(queryString);
-                long utcnow = zulu.getUTCTime();
+                long utcnow = System.currentTimeMillis();
 
                 while (rs.next()) {
                     String acid = rs.getString("acid");

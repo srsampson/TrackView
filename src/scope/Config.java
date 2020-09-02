@@ -122,7 +122,6 @@ public final class Config {
     private boolean noProps;
     //
     private final Timestamp sqlTime;
-    private final ZuluMillis zulu;
     //
     private final Color[] colorMap;
     private String databaseName;
@@ -133,7 +132,6 @@ public final class Config {
 
     Config(String conf, String map) {
         sqlTime = new Timestamp(0L);
-        zulu = new ZuluMillis();
         colorMap = new Color[30];
         noProps = false;
         booleanSettings = new ConcurrentHashMap<>(25);
@@ -788,7 +786,7 @@ public final class Config {
             bout = new BufferedWriter(fout);
 
             bout.write("#\r\n# TrackViewer Configuration File\r\n#\r\n# ");
-            sqlTime.setTime(zulu.getUTCTime());
+            sqlTime.setTime(System.currentTimeMillis());
             bout.write(sqlTime.toString() + "\r\n#\r\n");
 
             bout.write("db.host = " + databaseHost + "\r\n");
@@ -891,7 +889,7 @@ public final class Config {
      * @return a string Representing the database URL
      */
     public String getDatabaseURL() {
-        return "jdbc:mysql://" + databaseHost + ":" + databasePort + "/" + databaseName;
+        return "jdbc:mysql://" + databaseHost + ":" + databasePort + "/" + databaseName + "?serverTimezone=America/Chicago";
     }
 
     /**

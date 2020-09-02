@@ -14,7 +14,6 @@ public final class ProcessTracks {
     private final Config config;
     //
     private final ConcurrentHashMap<String, Track> tracks;
-    private final ZuluMillis zulu = new ZuluMillis();
     private final OrthographicNavigator nav;
     private final Timer timer1, timer2;
     private final TimerTask task1, task2;
@@ -173,7 +172,7 @@ public final class ProcessTracks {
 
         @Override
         public void run() {
-            currentTime = zulu.getUTCTime();
+            currentTime = System.currentTimeMillis();
             dimtime = config.getIntegerSetting(Config.DISP_INSTRM_DIM) * 1000L;
 
             tracks = getTrackList();
@@ -242,7 +241,7 @@ public final class ProcessTracks {
 
         @Override
         public void run() {
-            currentTime = zulu.getUTCTime();
+            currentTime = System.currentTimeMillis();
             droptime = config.getIntegerSetting(Config.DISP_INSTRM_DROP) * 1000L;
 
             tracks = getTrackList();

@@ -76,7 +76,6 @@ public final class Track {
     private ConcurrentHashMap<String, Integer> conflicts;  // List of target ID's and altitude that are possible conflicts
     //
     private Config dc;
-    private ZuluMillis zulu = new ZuluMillis();
 
     /**
      * A track is the complete data structure of the Aircraft ID (acid). It
@@ -87,7 +86,7 @@ public final class Track {
      * @param d Config params
      */
     public Track(String a, Config d) {
-        long now = zulu.getUTCTime();
+        long now = System.currentTimeMillis();
         
         dc = d;
         acid = a;
@@ -364,7 +363,7 @@ public final class Track {
         
         if (verticalTrend != val2) {
             verticalTrend = val2;
-            verticalTrend_time = zulu.getUTCTime();
+            verticalTrend_time = System.currentTimeMillis();
         }
     }
 

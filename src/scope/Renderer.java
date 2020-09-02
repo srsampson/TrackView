@@ -40,12 +40,10 @@ public final class Renderer extends ScopeRenderer {
     private Graphics2D graph;
     //
     private final Connection db;
-    private final ZuluMillis zulu;
 
     public Renderer(ProcessTracks pr, Connection con, Projection p, Navigator n, double s, Config c) {
         super(p, n, s, c);
 
-        zulu = new ZuluMillis();
         process = pr;
         db = con;
         sprites = new ConcurrentHashMap<>();
@@ -111,7 +109,7 @@ public final class Renderer extends ScopeRenderer {
          * Second, plot the targets and echoes onto the projection
          */
         if (!tracks.isEmpty()) {
-            long currentTime = zulu.getUTCTime();
+            long currentTime = System.currentTimeMillis();
 
             for (Track track : tracks) {
                 option = track.getTrackOptions();
